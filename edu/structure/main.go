@@ -6,6 +6,6 @@ import (
 )
 
 func main() {
-	stud := students.Student{"Kate", 8}
+	stud := students.Student{Name: "Kate", Year: 8, Gender: "M", Email: "dd.ru"}
 	fmt.Println(stud)
 }
