@@ -10,3 +10,5 @@ func main() {
 	fmt.Println(stud)
 	stud.Printdata("Name")
 }
+
+// you need to add go.mod
