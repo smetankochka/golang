@@ -8,4 +8,5 @@ import (
 func main() {
 	stud := students.Student{Name: "Kate", Year: 8, Gender: "M", Email: "dd.ru"}
 	fmt.Println(stud)
+	stud.Printdata("Name")
 }
