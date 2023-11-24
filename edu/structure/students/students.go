@@ -6,4 +6,5 @@ type Student struct {
 	Gender   string
 	Email    string
 	password string
+	snils    string
 }
