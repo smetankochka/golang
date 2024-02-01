@@ -1,40 +1,24 @@
 package main
 
+import "fmt"
+
 func MaxExpressionValue(nums []int) int {
-	n := len(nums)
-	maxVal := make([][]int, n)
-	for i := range maxVal {
-		maxVal[i] = make([]int, n)
-	}
-
-	maxDiff := make([][]int, n)
-	for i := range maxDiff {
-		maxDiff[i] = make([]int, n)
-	}
-
-	for i := 0; i < n; i++ {
-		for j := i + 1; j < n; j++ {
-			maxDiff[i][j] = nums[j] - nums[i]
-		}
-	}
-
-	for i := n - 1; i >= 0; i-- {
-		for j := i + 1; j < n; j++ {
-			maxVal[i][j] = maxDiff[i][j]
-			if i > 0 && j < n-1 {
-				maxVal[i][j] += maxVal[i-1][j+1]
+	maxVal := -1 // Используем начальное невозможно низкое значение
+	for p := 0; p < len(nums); p++ {
+		for q := p + 1; q < len(nums); q++ {
+			for r := q + 1; r < len(nums); r++ {
+				for s := r + 1; s < len(nums); s++ {
+					if nums[s]-nums[r]+nums[q]-nums[p] > maxVal {
+						maxVal = nums[s] - nums[r] + nums[q] - nums[p]
+					}
+				}
 			}
 		}
 	}
+	return maxVal
+}
 
-	result := maxVal[0][1]
-	for i := 0; i < n; i++ {
-		for j := i + 1; j < n; j++ {
-			if maxVal[i][j] > result {
-				result = maxVal[i][j]
-			}
-		}
-	}
-
-	return result
+func main() {
+	nums := []int{4, 5, 10, 50, 25}
+	fmt.Println(MaxExpressionValue(nums)) // Это должно вывести 46
 }
