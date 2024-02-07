@@ -4,59 +4,85 @@ import (
 	"fmt"
 )
 
+type ogran struct {
+	s  bool
+	o1 int
+	o2 int
+}
+
+type offset struct {
+	ryad  ogran
+	mesto ogran
+}
+
 func main() {
-	var t int
+	var t, n, m, k, p, cur, si, ri, ci, q int
 	fmt.Scan(&t)
 
-	for i := 0; i < t; i++ {
-		var n, m, k, p int
+	for t > 0 {
+		t--
 		fmt.Scan(&n, &m, &k, &p)
-
-		rowLimits := make([][3]int, p) // Двумерный массив для ограничений на ряды
-		colLimits := make([][3]int, p) // Двумерный массив для ограничений на места
-
-		for j := 0; j < p; j++ { // Считываем ограничения
-			var limitType string
-			fmt.Scan(&limitType)
-
-			if limitType == "R" {
-				fmt.Scan(&rowLimits[j][0], &rowLimits[j][1], &rowLimits[j][2])
-			} else if limitType == "C" {
-				fmt.Scan(&colLimits[j][0], &colLimits[j][1], &colLimits[j][2])
+		count := k
+		mas := make([][]struct {
+			first  int
+			second bool
+		}, n)
+		for i := range mas {
+			mas[i] = make([]struct {
+				first  int
+				second bool
+			}, m)
+			for j := range mas[i] {
+				mas[i][j] = struct {
+					first  int
+					second bool
+				}{-1, false}
 			}
 		}
 
-		var q, disatisfaction int
-		disatisfaction = 0
-		fmt.Scan(&q)
-
-		occupied := make([][]bool, n+1)
-		for i := 1; i <= n; i++ {
-			occupied[i] = make([]bool, m+1)
-		}
-
-		for j := 0; j < q; j++ { // Обрабатываем поручения
-			var s, r, c int
-			fmt.Scan(&s, &r, &c)
-
-			if !occupied[r][c] {
-				occupied[r][c] = true
+		og := make([]offset, k)
+		used := make([]bool, k)
+		var ty byte
+		for i := 0; i < p; i++ {
+			fmt.Scan(&ty, &cur)
+			if ty == 'R' {
+				fmt.Scan(&og[cur-1].ryad.o1, &og[cur-1].ryad.o2)
+				og[cur-1].ryad.o1--
+				og[cur-1].ryad.o2--
+				og[cur-1].ryad.s = true
 			} else {
-				disatisfaction++
+				fmt.Scan(&og[cur-1].mesto.o1, &og[cur-1].mesto.o2)
+				og[cur-1].mesto.o1--
+				og[cur-1].mesto.o2--
+				og[cur-1].mesto.s = true
 			}
-
-			for l := 0; l < p; l++ { // Проверяем ограничения
-				if rowLimits[l][0] == s && (r < rowLimits[l][1] || r > rowLimits[l][2]) {
-					disatisfaction++
-					break
+		}
+		fmt.Scan(&q)
+		for i := 0; i < q; i++ {
+			var trash string
+			fmt.Scan(&trash, &si, &ri, &ci)
+			si--
+			ri--
+			ci--
+			if !used[si] && mas[ri][ci].first == -1 {
+				used[si] = true
+				mas[ri][ci].first = si
+				if og[si].ryad.s && (og[si].ryad.o1 > ri && og[si].ryad.o2 < ri) {
+					mas[ri][ci].second = true
+				} else if og[si].mesto.s && (og[si].mesto.o1 > ci && og[si].mesto.o2 < ci) {
+					mas[ri][ci].second = true
+				} else {
+					count--
 				}
-				if colLimits[l][0] == s && (c < colLimits[l][1] || c > colLimits[l][2]) {
-					disatisfaction++
-					break
+			} else if used[si] {
+				if mas[ri][ci].second && ((og[si].ryad.s && (og[si].ryad.o1 > ri && og[si].ryad.o2 < ri)) || (og[si].mesto.s && (og[si].mesto.o1 > ci || og[si].mesto.o2 < ci))) {
+					used[si] = true
+					used[mas[ri][ci].first] = false
+					mas[ri][ci].first = si
+					count--
 				}
 			}
 		}
-
-		fmt.Println(k - q - disatisfaction)
+		fmt.Println(count)
 	}
 }
