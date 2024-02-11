@@ -1,0 +1,56 @@
+Композиция интерфейсов
+
+Композиция интерфейсов позволяет объединять их и создавать новый — определять интерфейс, который включает в себя методы из других интерфейсов.
+
+Композиция интерфейсов в Go происходит, когда один или несколько интерфейсов включаются в определение другого интерфейса. Новый интерфейс наследует методы и требования других интерфейсов:
+
+package main
+
+import "fmt"
+
+// Интерфейс Reader
+type Reader interface {
+    Read() string
+}
+
+// Интерфейс Writer
+type Writer interface {
+    Write(data string)
+}
+
+// Интерфейс ReadWriter объединяет методы Reader и Writer
+type ReadWriter interface {
+    Reader
+    Writer
+}
+
+// Структура, которая реализует интерфейс ReadWriter
+type TextProcessor struct {
+    data string
+}
+
+func (tp *TextProcessor) Read() string {
+    return tp.data
+}
+
+func (tp *TextProcessor) Write(data string) {
+    tp.data = data
+}
+
+func main() {
+    tp := &TextProcessor{}
+
+    // Используем интерфейса ReadWriter
+    var rw ReadWriter = tp
+
+    rw.Write("Hello, World!")
+    fmt.Println(rw.Read()) // Вывод: Hello, World!
+}
+
+Интерфейс ReadWriter составляется из интерфейсов Reader и Writer. Структура TextProcessor реализует методы, которые определены в интерфейсе ReadWriter, и может быть использована как ReadWriter. Композиция интерфейсов делает код универсальным и позволяет объектам реализовывать только те методы, которые им нужны.
+
+Композиция интерфейсов будет полезна:
+
+    если вам нужно создать более сложные контракты
+    если вы хотите разделить функциональность на мелкие части и сделать код чище и гибче
+
