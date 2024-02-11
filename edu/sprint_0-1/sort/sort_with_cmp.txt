@@ -1,0 +1,39 @@
+Использование функции сравнения
+
+Для сортировки объектов других типов данных, либо по какому-то другому признаку (например, строки по их длине или пользователей по их возрасту) можно использовать функцию Slice(). Она принимает функцию less в качестве аргумента:
+
+func Slice(x interface{}, less func(i, j int) bool)
+
+Функция less определяет, должен ли элемент с индексом i находиться перед элементом с индексом j:
+
+strs := []string{"A very long string", "a medium string", "a short one"}
+sort.Slice(strs, func(i, j int) bool {
+	return len(strs[i]) < len(strs[j])
+})
+fmt.Println(strings.Join(strs, ", ")) // a short one, a medium string, a very long string
+
+Вот здесь слайс с описанием пользователей отсортирован по возрасту:
+
+type User struct {
+	Name string
+	Age  int
+}
+users := []User{
+		{
+			Name: "Ivan",
+			Age:  56,
+		},
+		{
+			Name: "Tim",
+			Age:  33,
+		},
+		{
+			Name: "Bob",
+			Age:  89,
+		},
+}
+sort.Slice(users, func(i, j int) bool {
+	return users[i].Age < users[j].Age
+})
+fmt.Println(users) // [{Tim 33} {Ivan 56} {Bob 89}]
+
