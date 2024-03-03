@@ -7,7 +7,6 @@ import (
 func NextWorkday(start time.Time) time.Time {
 	for {
 		start = start.AddDate(0, 0, 1) // увеличиваем дату на 1 день
-
 		// Проверяем, является ли текущая дата рабочим днем (Пн-Пт)
 		if start.Weekday() != time.Saturday && start.Weekday() != time.Sunday {
 			// Нашли следующий рабочий день, выходим из цикла и возвращаем его
