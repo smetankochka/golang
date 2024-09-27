@@ -5,37 +5,39 @@ import (
 	"sync"
 )
 
-func DecrementVariable(concurrency int, decrementValue int) int {
+func DecrementVariable(concurrency int, decrementValue *int) int {
 	var mu sync.Mutex
-	iter := 0
+	var wg sync.WaitGroup
+
+	iterations := 0
 	done := false
-	for {
+
+	for !done {
+		wg.Add(concurrency)
+		iterations++
 		for i := 0; i < concurrency; i++ {
 			go func() {
+				defer wg.Done()
 				mu.Lock()
-				if decrementValue > 0 {
-					decrementValue--
+				defer mu.Unlock()
+				if *decrementValue > 0 {
+					(*decrementValue)--
 				}
-				if decrementValue == 0 {
+				if *decrementValue <= 0 {
 					done = true
 				}
-				mu.Unlock()
 			}()
-			if done {
-				break
-			}
 		}
-		iter++
-		if done {
-			break
-		}
+
+		wg.Wait()
 	}
-	return iter
+
+	fmt.Print(iterations)
+	return iterations
 }
 
 func main() {
-	concurrency := 5
-	decrementValue := 20
-	iterations := DecrementVariable(concurrency, decrementValue)
-	fmt.Printf("Reached zero in %d iterations.\n", iterations)
+	initialDecrementValue := 10
+	iterations := DecrementVariable(3, &initialDecrementValue)
+	fmt.Println("\nTotal iterations:", iterations)
 }
